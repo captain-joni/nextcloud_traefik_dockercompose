@@ -9,12 +9,12 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - /opt/containers/nextcloud/database:/var/lib/mysql   #der pfad zur datenbank (nur den Teil vor dem ":")
+      - /opt/containers/nextcloud/database:/var/lib/mysql   #change the path to your datebase directory ( just the part in front of the : )
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpw #SQL root Passwort eingeben
-      - MYSQL_PASSWORD=password #SQL Benutzer Passwort eingeben
-      - MYSQL_DATABASE=nextcloud #Datenbank Name
-      - MYSQL_USER=username #SQL Nutzername
+      - MYSQL_ROOT_PASSWORD=rootpw #set SQL root Password
+      - MYSQL_PASSWORD=password #set SQL user Password
+      - MYSQL_DATABASE=nextcloud #Database Name
+      - MYSQL_USER=username #SQL username
       - MYSQL_INITDB_SKIP_TZINFO=1
     networks:
       - default
@@ -26,7 +26,7 @@ services:
     networks:
         - default
     restart: unless-stopped
-    command: redis-server --requirepass password # Redis Passwort eingeben
+    command: redis-server --requirepass password # set Redis Password
 
   nextcloud-app:
     image: nextcloud:24.0.2
@@ -37,19 +37,19 @@ services:
       - nextcloud-redis
     environment:
         REDIS_HOST: nextcloud-redis
-        REDIS_HOST_PASSWORD: password # Redis Passwort von oben wieder eingeben
+        REDIS_HOST_PASSWORD: password # paste Redis Password
     volumes:
-      - /opt/containers/nextcloud/app:/var/www/html         # pfade vor dem : anpassen
-      - /opt/containers/nextcloud/daten:/var/www/html/data    # pfade vor dem : anpassen
+      - /opt/containers/nextcloud/app:/var/www/html         # change paths again if needed
+      - /opt/containers/nextcloud/daten:/var/www/html/data    # change paths again if needed
       - /mnt/sdc:/srv/www/html/data2
 
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nextcloud-app.entrypoints=http"
-      - "traefik.http.routers.nextcloud-app.rule=Host(`cloud.yourdomain.com`)"   # domain eingeben
+      - "traefik.http.routers.nextcloud-app.rule=Host(`cloud.yourdomain.com`)"   # copy ur domain
       - "traefik.http.routers.nextcloud-app.middlewares=redirect@file,"
       - "traefik.http.routers.nextcloud-app-secure.entrypoints=https"
-      - "traefik.http.routers.nextcloud-app-secure.rule=Host(`cloud.yourdomain.com`)"  # domain eingeben
+      - "traefik.http.routers.nextcloud-app-secure.rule=Host(`cloud.yourdomain.com`)"  # copy ur domin in here
       - "traefik.http.routers.nextcloud-app-secure.tls=true"
       - "traefik.http.routers.nextcloud-app-secure.tls.certresolver=mytlschallenge"
       - "traefik.http.routers.nextcloud-app-secure.service=nextcloud-app"
